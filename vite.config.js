@@ -10,7 +10,7 @@ export default defineConfig({
     port: 5173,
     // Forward /api/* to FastAPI: same origin for the browser, no CORS needed.
     proxy: {
-      '/api': 'http://127.0.0.1:8000',
+      '/api': process.env.ASTRA_API_URL || 'http://127.0.0.1:8000',
     },
   },
 });
