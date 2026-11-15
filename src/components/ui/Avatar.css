@@ -1,0 +1,16 @@
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--color-secondary);
+  color: var(--color-text-on-accent);
+  font-family: var(--font-display);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  box-shadow: inset 0 1px 0 rgb(var(--starlight-ivory-rgb) / 0.35);
+}
+
+.avatar--sm { width: 32px; height: 32px; font-size: var(--text-small); }
+.avatar--md { width: 40px; height: 40px; font-size: var(--text-body); }
+.avatar--lg { width: 56px; height: 56px; font-size: var(--text-h3); }

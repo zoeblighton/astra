@@ -1,0 +1,163 @@
+.search {
+  position: relative;
+  width: 100%;
+}
+
+/* ---------- Field ---------- */
+.search__field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: 48px;
+  padding: 0 var(--space-2) 0 var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-field);
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.search__field:hover {
+  border-color: var(--border-strong);
+}
+
+.search__field:focus-within {
+  border-color: rgb(var(--atmospheric-lilac-rgb) / 0.7);
+  box-shadow: 0 0 0 3px rgb(var(--atmospheric-lilac-rgb) / 0.15);
+}
+
+.search__icon {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+}
+
+.search__input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  background: transparent;
+  border: 0;
+  font-size: var(--text-body);
+  color: var(--color-text);
+  caret-color: var(--color-accent-soft);
+}
+
+.search__input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.85;
+}
+
+/* The field shows focus via :focus-within, so no extra outline on the input */
+.search__input:focus-visible {
+  outline: none;
+}
+
+/* Hide the browser's own clear button — we provide one */
+.search__input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.search__clear {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--color-text-secondary);
+  transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+}
+
+.search__clear:hover {
+  background: rgb(var(--starlight-ivory-rgb) / 0.08);
+  color: var(--color-text);
+}
+
+.search__clear:focus-visible {
+  border-radius: 50%;
+}
+
+/* ---------- Results panel ---------- */
+.search__panel {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  right: 0;
+  z-index: var(--z-overlay);
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-field);
+  box-shadow: var(--shadow-lift);
+}
+
+.search__panel[hidden],
+.search__results[hidden] {
+  display: none;
+}
+
+.search__results {
+  list-style: none;
+  padding: 0;
+  max-height: min(360px, 60vh);
+  overflow-y: auto;
+}
+
+.search__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.search__option.is-active {
+  background: var(--color-surface-raised);
+}
+
+.search__text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.search__title,
+.search__subtitle {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.search__title {
+  color: var(--color-text);
+}
+
+.search__subtitle {
+  font-size: var(--text-small);
+  color: var(--color-text-secondary);
+}
+
+.search__type,
+.search__note {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+}
+
+.search__type {
+  color: var(--color-secondary);
+}
+
+.search__empty {
+  padding: var(--space-3);
+  color: var(--color-text-secondary);
+}
+
+.search__note {
+  padding: var(--space-2) var(--space-3) var(--space-1);
+  margin-top: var(--space-1);
+  border-top: 1px solid var(--border-subtle);
+  color: var(--color-text-secondary);
+}

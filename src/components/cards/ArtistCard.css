@@ -1,0 +1,73 @@
+.artist-card {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  padding: var(--space-5) var(--space-4);
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  transition:
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+
+.artist-card:hover {
+  border-color: var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.artist-card__art {
+  width: min(120px, 70%);
+  margin-bottom: var(--space-3);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--border-subtle), 0 12px 30px rgb(0 0 0 / 0.35);
+}
+
+.artist-card__name {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-medium);
+}
+
+.artist-card__genre {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--color-accent-soft);
+}
+
+.artist-card__listeners {
+  font-size: var(--text-small);
+  color: var(--color-text-secondary);
+}
+
+.artist-card__follow {
+  position: relative;
+  z-index: 2; /* above the stretched link */
+  margin-top: var(--space-3);
+}
+
+/* Stretched link */
+.artist-card__link {
+  color: inherit;
+  font-weight: inherit;
+}
+
+.artist-card__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.artist-card__link:focus-visible {
+  outline: none;
+}
+
+.artist-card:has(.artist-card__link:focus-visible) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}

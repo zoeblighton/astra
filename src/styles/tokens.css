@@ -1,0 +1,147 @@
+/* ==========================================================================
+   ASTRA design tokens
+   Single source of truth for the design system (see design/*.png).
+   Components must reference these variables, never raw hex values.
+   ========================================================================== */
+
+:root {
+  /* --------------------------------------------------------------
+     1. Brand palette (exact values from design/colour-palette.png)
+     Do not add brand colours without approval.
+     -------------------------------------------------------------- */
+  --cosmic-charcoal: #19191f;
+  --deep-graphite: #292730;
+  --smoky-plum: #403647;
+  --nebula-violet: #695879;
+  --atmospheric-lilac: #a493b5;
+  --burnt-copper: #9a664b;
+  --clay-copper: #bf8062;
+  --dusty-terracotta: #e2ac91;
+  --starlight-ivory: #e7e0d5;
+  --ash-grey: #a9a5ac;
+
+  /* Same colours as RGB triplets, so we can make translucent versions
+     (rgb(var(--x-rgb) / 0.1)) without inventing new colours. */
+  --cosmic-charcoal-rgb: 25 25 31;
+  --deep-graphite-rgb: 41 39 48;
+  --smoky-plum-rgb: 64 54 71;
+  --nebula-violet-rgb: 105 88 121;
+  --atmospheric-lilac-rgb: 164 147 181;
+  --clay-copper-rgb: 191 128 98;
+  --dusty-terracotta-rgb: 226 172 145;
+  --starlight-ivory-rgb: 231 224 213;
+
+  /* --------------------------------------------------------------
+     2. Semantic colours — what components actually use.
+     Map roles to palette so we can retune in one place.
+     -------------------------------------------------------------- */
+  --color-bg: var(--cosmic-charcoal);
+  --color-surface: var(--deep-graphite);
+  --color-surface-raised: var(--smoky-plum);
+  --color-surface-glass: rgb(var(--deep-graphite-rgb) / 0.62);
+
+  --color-text: var(--starlight-ivory);
+  --color-text-secondary: var(--ash-grey);
+  --color-text-on-accent: var(--cosmic-charcoal);
+
+  --color-accent: var(--clay-copper);
+  --color-accent-strong: var(--burnt-copper);
+  --color-accent-soft: var(--dusty-terracotta);
+  --color-secondary: var(--atmospheric-lilac);
+  --color-secondary-deep: var(--nebula-violet);
+
+  /* Soft borders in translucent ivory, as per the brief */
+  --border-subtle: rgb(var(--starlight-ivory-rgb) / 0.08);
+  --border-soft: rgb(var(--starlight-ivory-rgb) / 0.14);
+  --border-strong: rgb(var(--starlight-ivory-rgb) / 0.24);
+
+  --focus-ring: var(--dusty-terracotta);
+
+  /* --------------------------------------------------------------
+     3. Typography (design/typography.png + brief §5)
+     -------------------------------------------------------------- */
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+
+  --text-display: 3rem;      /* 48px */
+  --text-h1: 2rem;           /* 32px */
+  --text-h2: 1.5rem;         /* 24px */
+  --text-h3: 1.125rem;       /* 18px */
+  --text-body: 0.875rem;     /* 14px */
+  --text-small: 0.75rem;     /* 12px */
+  --text-meta: 0.6875rem;    /* 11px */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-body: 1.6;
+
+  --tracking-display: -0.01em;
+  --tracking-caps: 0.06em;   /* uppercase section titles */
+  --tracking-mono: 0.08em;   /* DM Mono metadata */
+
+  /* --------------------------------------------------------------
+     4. Shape (brief §6)
+     -------------------------------------------------------------- */
+  --radius-sm: 8px;
+  --radius-button: 11px;
+  --radius-field: 14px;
+  --radius-card: 18px;
+  --radius-feature: 22px;
+  --radius-pill: 999px;
+
+  /* --------------------------------------------------------------
+     5. Spacing — 4px base scale
+     -------------------------------------------------------------- */
+  --space-1: 0.25rem;  /* 4  */
+  --space-2: 0.5rem;   /* 8  */
+  --space-3: 0.75rem;  /* 12 */
+  --space-4: 1rem;     /* 16 */
+  --space-5: 1.5rem;   /* 24 */
+  --space-6: 2rem;     /* 32 */
+  --space-7: 3rem;     /* 48 */
+  --space-8: 4rem;     /* 64 */
+  --space-9: 6rem;     /* 96 */
+
+  --page-gutter: var(--space-4);
+  --content-max: 1200px;
+
+  /* --------------------------------------------------------------
+     6. Effects
+     -------------------------------------------------------------- */
+  --glass-blur: 14px;
+  --shadow-soft: 0 8px 24px rgb(0 0 0 / 0.28);
+  --shadow-lift: 0 16px 40px rgb(0 0 0 / 0.38);
+  --glow-copper: 0 0 24px rgb(var(--clay-copper-rgb) / 0.25);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+
+  /* Layering */
+  --z-background: -1;
+  --z-base: 0;
+  --z-nav: 50;
+  --z-player: 60;
+  --z-overlay: 100;
+
+  /* Breakpoints (reference only — CSS vars can't be used in @media):
+     tablet  min-width: 768px
+     desktop min-width: 1200px */
+}
+
+@media (min-width: 768px) {
+  :root {
+    --page-gutter: var(--space-6);
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --page-gutter: var(--space-7);
+  }
+}

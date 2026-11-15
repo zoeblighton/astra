@@ -1,0 +1,142 @@
+/* ==========================================================================
+   Mobile first: fixed bottom bar
+   ========================================================================== */
+.nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-nav);
+  padding-bottom: env(safe-area-inset-bottom);
+  background: rgb(var(--deep-graphite-rgb) / 0.88);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+  border-top: 1px solid var(--border-subtle);
+}
+
+.nav__list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.nav__link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-1) var(--space-3);
+  font-size: var(--text-meta);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-secondary);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.nav__icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 30px;
+  border-radius: var(--radius-pill);
+  color: var(--color-secondary);
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out);
+}
+
+.nav__label {
+  white-space: nowrap;
+}
+
+.nav__link:hover {
+  color: var(--color-text);
+}
+
+.nav__link:hover .nav__icon {
+  background: rgb(var(--starlight-ivory-rgb) / 0.06);
+}
+
+/* Active: terracotta pill with dark icon (Figma) */
+.nav__link[aria-current='page'] {
+  color: var(--color-text);
+}
+
+.nav__link[aria-current='page'] .nav__icon {
+  background: var(--color-accent-soft);
+  color: var(--color-text-on-accent);
+}
+
+.nav__link:focus-visible {
+  outline-offset: -2px;
+}
+
+/* ==========================================================================
+   Tablet: floating, centred bottom bar
+   ========================================================================== */
+@media (min-width: 768px) {
+  .nav {
+    left: 50%;
+    right: auto;
+    bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+    width: min(520px, calc(100% - var(--page-gutter) * 2));
+    translate: -50% 0;
+    padding: var(--space-1);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-feature);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .nav__link {
+    padding: var(--space-2) var(--space-1);
+    border-radius: var(--radius-card);
+    font-size: var(--text-small);
+  }
+}
+
+/* ==========================================================================
+   Desktop: inline in the header
+   ========================================================================== */
+@media (min-width: 1200px) {
+  .nav {
+    position: static;
+    width: auto;
+    translate: none;
+    padding: 0;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .nav__list {
+    display: flex;
+    gap: var(--space-1);
+  }
+
+  .nav__link {
+    flex-direction: row;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4) var(--space-2) var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-body);
+  }
+
+  .nav__icon {
+    width: auto;
+    height: auto;
+    background: none !important;
+  }
+
+  .nav__link:hover {
+    background: rgb(var(--starlight-ivory-rgb) / 0.06);
+  }
+
+  .nav__link[aria-current='page'] {
+    background: var(--color-accent-soft);
+    color: var(--color-text-on-accent);
+  }
+
+  .nav__link[aria-current='page'] .nav__icon {
+    color: inherit;
+  }
+}

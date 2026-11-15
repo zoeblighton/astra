@@ -1,0 +1,93 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-nav);
+}
+
+/*
+ * The glass effect lives on a pseudo-element, NOT on .header itself:
+ * backdrop-filter on an ancestor would make the mobile nav (position: fixed)
+ * position relative to the header instead of the viewport.
+ */
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgb(var(--cosmic-charcoal-rgb) / 0.72);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  min-height: 64px;
+}
+
+.header__brand {
+  margin-right: auto;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: var(--weight-regular);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--color-text);
+}
+
+.header__brand:focus-visible {
+  outline-offset: 6px;
+}
+
+/* Mobile: search is a full-width row, shown by the toggle */
+.header__search {
+  display: none;
+  order: 3;
+  width: 100%;
+  padding-bottom: var(--space-3);
+}
+
+.header__search.is-open {
+  display: block;
+}
+
+/* Tablet+: search always visible, toggle hidden */
+@media (min-width: 768px) {
+  .header__inner {
+    flex-wrap: nowrap;
+    min-height: 76px;
+  }
+
+  .header__search {
+    display: block;
+    order: 0;
+    width: min(340px, 42vw);
+    padding: 0;
+  }
+
+  .header__search-toggle {
+    display: none;
+  }
+}
+
+/* Desktop: brand | centred nav | search */
+@media (min-width: 1200px) {
+  .header__inner {
+    gap: var(--space-6);
+  }
+
+  .header__brand {
+    margin-right: 0;
+  }
+
+  .header .nav {
+    margin-inline: auto;
+  }
+
+  .header__search {
+    width: 300px;
+  }
+}

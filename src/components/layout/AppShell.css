@@ -1,0 +1,35 @@
+.app-main {
+  min-height: 70vh;
+  padding-bottom: var(--space-8);
+}
+
+.app-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.app-footer a {
+  color: var(--color-secondary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.app-footer a:hover {
+  color: var(--color-text);
+}
+
+/* Leave room for the fixed bottom nav below desktop */
+@media (max-width: 1199px) {
+  .app-footer {
+    padding-bottom: calc(var(--space-9) + env(safe-area-inset-bottom));
+  }
+}

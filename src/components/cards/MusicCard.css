@@ -1,0 +1,148 @@
+.music-card {
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  transition:
+    border-color var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+
+.music-card:hover {
+  border-color: var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.music-card:has(.music-card__link):hover {
+  transform: translateY(-2px);
+}
+
+.music-card__title {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0;
+  line-height: var(--leading-snug);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.music-card__artist {
+  font-size: var(--text-small);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Stretched link: the whole card becomes the click target */
+.music-card__link {
+  text-align: left;
+  color: inherit;
+  font-weight: inherit;
+}
+
+.music-card__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.music-card__link:focus-visible {
+  outline: none;
+}
+
+.music-card:has(.music-card__link:focus-visible) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+/* ---------- Row layout (Figma) ---------- */
+.music-card--row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: 80px;
+  padding-left: var(--space-4);
+}
+
+.music-card--row .music-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.music-card--row .music-card__art {
+  width: 80px;
+  align-self: stretch;
+  flex-shrink: 0;
+}
+
+.music-card--row .artwork {
+  height: 100%;
+  border-radius: 0;
+}
+
+/* ---------- Tile layout ---------- */
+.music-card--tile {
+  display: grid;
+  padding: var(--space-3);
+  gap: var(--space-3);
+}
+
+.music-card--tile .music-card__art {
+  position: relative;
+}
+
+.music-card--tile .artwork {
+  border-radius: 12px;
+}
+
+.music-card--tile .music-card__body {
+  display: grid;
+  gap: 2px;
+  padding-inline: var(--space-1);
+}
+
+.music-card__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--color-secondary);
+}
+
+/* Play button floats over the artwork, above the stretched link */
+.music-card__play {
+  position: absolute;
+  right: var(--space-2);
+  bottom: var(--space-2);
+  z-index: 2;
+  opacity: 0;
+  translate: 0 6px;
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    translate var(--duration-base) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.music-card:hover .music-card__play,
+.music-card__play:focus-visible {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* Touch devices have no hover — keep the play button visible */
+@media (hover: none) {
+  .music-card__play {
+    opacity: 1;
+    translate: 0 0;
+  }
+}

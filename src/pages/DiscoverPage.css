@@ -1,0 +1,221 @@
+.discover-page {
+  display: grid;
+  gap: var(--space-7);
+}
+
+.discover-section {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.discover-section__heading,
+.discover-results-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.discover-section__heading h2,
+.discover-invitation h2 {
+  margin-top: var(--space-2);
+}
+
+.discover-section__hint {
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+}
+
+.discover-paths {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: 2px 2px var(--space-2);
+  scrollbar-width: thin;
+}
+
+.discover-path {
+  flex: 0 0 auto;
+  min-height: 42px;
+  padding: 0 var(--space-4);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-pill);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.discover-path:hover {
+  color: var(--color-text);
+  border-color: var(--color-secondary);
+}
+
+.discover-path--active {
+  color: var(--color-text-on-accent);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.discover-path--active:hover {
+  color: var(--color-text-on-accent);
+}
+
+.discover-results-heading {
+  align-items: center;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.discover-results-heading h3 {
+  font-size: var(--text-h3);
+}
+
+.discover-source,
+.discover-track__sample {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+}
+
+.discover-source--spotify {
+  color: var(--color-accent-soft);
+}
+
+.discover-source--sample,
+.discover-track__sample {
+  color: var(--color-text-secondary);
+}
+
+.discover-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.discover-track {
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--color-surface-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out);
+}
+
+.discover-track:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-soft);
+}
+
+.discover-track > .artwork {
+  aspect-ratio: 1;
+  width: 100%;
+  border-radius: 12px;
+}
+
+.discover-track__details {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-1) var(--space-1);
+}
+
+.discover-track__title,
+.discover-track__artist {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.discover-track__title {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+}
+
+.discover-track__artist {
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+}
+
+.discover-track__link {
+  justify-self: start;
+  margin-top: var(--space-2);
+  color: var(--color-secondary);
+  font-size: var(--text-small);
+  text-underline-offset: 3px;
+}
+
+.discover-track__link:hover {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+.discover-track__sample {
+  margin-top: var(--space-2);
+}
+
+.discover-message {
+  padding: var(--space-5);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+}
+
+.discover-invitation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  background:
+    radial-gradient(ellipse at 92% 10%, rgb(var(--clay-copper-rgb) / 0.18), transparent 44%),
+    var(--color-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-feature);
+}
+
+.discover-invitation > div {
+  max-width: 560px;
+}
+
+.discover-invitation p:last-child {
+  margin-top: var(--space-3);
+  color: var(--color-text-secondary);
+}
+
+.discover-invitation .btn {
+  flex: 0 0 auto;
+}
+
+@media (min-width: 768px) {
+  .discover-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  .discover-invitation {
+    padding: var(--space-6);
+  }
+}
+
+@media (max-width: 540px) {
+  .discover-section__heading,
+  .discover-invitation {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .discover-section__hint {
+    display: none;
+  }
+
+  .discover-source {
+    font-size: 0.6rem;
+    text-align: right;
+  }
+}

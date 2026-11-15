@@ -1,0 +1,161 @@
+/* Atmospheric background — see CosmicBackground.jsx */
+
+.cosmic-bg {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-background);
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--color-bg);
+}
+
+/* ---------- Large ambient glows ---------- */
+.cosmic-bg__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+}
+
+/* Plum haze rising from bottom-right (all Figma frames) */
+.cosmic-bg__glow--bottom {
+  width: 90vmax;
+  height: 90vmax;
+  right: -45vmax;
+  bottom: -50vmax;
+  background: radial-gradient(
+    circle at center,
+    rgb(var(--smoky-plum-rgb) / 0.95) 0%,
+    rgb(var(--smoky-plum-rgb) / 0.45) 35%,
+    transparent 65%
+  );
+  animation: cosmic-breathe 24s ease-in-out infinite;
+}
+
+/* Very faint violet wash behind the top area for depth */
+.cosmic-bg__glow--top {
+  width: 70vmax;
+  height: 50vmax;
+  left: 20%;
+  top: -30vmax;
+  background: radial-gradient(
+    ellipse at center,
+    rgb(var(--nebula-violet-rgb) / 0.12) 0%,
+    transparent 70%
+  );
+}
+
+/* ---------- Orbs ---------- */
+.cosmic-bg__orb {
+  position: absolute;
+  border-radius: 50%;
+}
+
+/* Big smoky orb, top-left: dark centre, plum light on its lower edge */
+.cosmic-bg__orb--primary {
+  width: clamp(320px, 34vw, 520px);
+  aspect-ratio: 1;
+  left: clamp(-200px, -14vw, -120px);
+  top: clamp(-140px, -9vw, -80px);
+  background: radial-gradient(
+    circle at 45% 35%,
+    var(--cosmic-charcoal) 0%,
+    var(--cosmic-charcoal) 45%,
+    rgb(var(--smoky-plum-rgb) / 0.7) 80%,
+    rgb(var(--nebula-violet-rgb) / 0.55) 100%
+  );
+  box-shadow:
+    inset 0 -18px 40px rgb(var(--nebula-violet-rgb) / 0.25),
+    0 0 0 1px rgb(0 0 0 / 0.6);
+  animation: cosmic-drift 60s ease-in-out infinite;
+}
+
+/* Copper-tinted orb, top-right */
+.cosmic-bg__orb--copper {
+  width: clamp(110px, 10.5vw, 160px);
+  aspect-ratio: 1;
+  right: clamp(24px, 3.5vw, 56px);
+  top: clamp(-36px, -2vw, -20px);
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgb(var(--clay-copper-rgb) / 0.1) 0%,
+    rgb(var(--clay-copper-rgb) / 0.18) 60%,
+    rgb(var(--dusty-terracotta-rgb) / 0.28) 100%
+  );
+  animation: cosmic-drift 48s ease-in-out infinite reverse;
+}
+
+/* Orb sliced by the right edge */
+.cosmic-bg__orb--edge {
+  width: clamp(80px, 7.5vw, 110px);
+  aspect-ratio: 1;
+  right: clamp(-50px, -3.5vw, -36px);
+  top: clamp(56px, 5vw, 72px);
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--cosmic-charcoal) 30%,
+    rgb(var(--clay-copper-rgb) / 0.22) 100%
+  );
+  border: 1px solid rgb(var(--clay-copper-rgb) / 0.18);
+}
+
+/* Small dark ring */
+.cosmic-bg__orb--ring {
+  width: clamp(30px, 2.8vw, 40px);
+  aspect-ratio: 1;
+  right: clamp(72px, 6.8vw, 100px);
+  top: clamp(120px, 10.5vw, 150px);
+  background: radial-gradient(
+    circle,
+    var(--cosmic-charcoal) 45%,
+    rgb(var(--clay-copper-rgb) / 0.4) 100%
+  );
+  animation: cosmic-drift 40s ease-in-out infinite;
+}
+
+/* ---------- Dust ---------- */
+.cosmic-bg__dust {
+  position: absolute;
+  width: var(--dust-size);
+  height: var(--dust-size);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgb(var(--clay-copper-rgb) / 0.35) 0%,
+    rgb(var(--clay-copper-rgb) / 0.12) 45%,
+    transparent 70%
+  );
+  filter: blur(1.5px);
+  animation: cosmic-twinkle 18s ease-in-out infinite;
+  animation-delay: var(--dust-delay);
+}
+
+/* ---------- Subtle grain for a cinematic finish ---------- */
+.cosmic-bg__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- Motion (disabled by prefers-reduced-motion in global.css) ---------- */
+@keyframes cosmic-drift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(12px, 10px, 0); }
+}
+
+@keyframes cosmic-breathe {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
+@keyframes cosmic-twinkle {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* Smaller screens: fewer, softer elements so content stays readable */
+@media (max-width: 767px) {
+  .cosmic-bg__dust:nth-child(n + 9) { display: none; }
+  .cosmic-bg__orb--ring { display: none; }
+}

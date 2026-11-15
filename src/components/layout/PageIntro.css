@@ -1,0 +1,43 @@
+.page-intro {
+  display: grid;
+  gap: var(--space-4);
+  padding-block: var(--space-8) var(--space-7);
+  max-width: 52rem;
+}
+
+.page-intro__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--color-accent-soft);
+}
+
+.page-intro__title {
+  font-size: clamp(2.25rem, 1.6rem + 2.6vw, var(--text-display));
+}
+
+/* Focus is moved here programmatically; no visible ring needed */
+.page-intro__title:focus {
+  outline: none;
+}
+
+.page-intro__lead {
+  max-width: 44ch;
+  font-size: var(--text-h3);
+  line-height: var(--leading-snug);
+  color: var(--color-text-secondary);
+}
+
+.page-intro__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+@media (min-width: 768px) {
+  .page-intro {
+    padding-block: var(--space-9) var(--space-8);
+  }
+}

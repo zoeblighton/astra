@@ -1,0 +1,54 @@
+.artwork {
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 1;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background:
+    radial-gradient(circle at var(--art-light-x) 0%, var(--art-a) 0%, var(--art-b) 78%);
+}
+
+.artwork--round {
+  border-radius: 50%;
+}
+
+/* The planet: lit from the top-left, glowing softly */
+.artwork__orb {
+  position: absolute;
+  left: var(--art-orb-x);
+  top: var(--art-orb-y);
+  width: var(--art-orb-size);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    var(--art-orb) 0%,
+    color-mix(in srgb, var(--art-orb) 45%, var(--art-b)) 70%,
+    color-mix(in srgb, var(--art-orb) 20%, var(--art-b)) 100%
+  );
+  box-shadow: 0 0 32px color-mix(in srgb, var(--art-orb) 35%, transparent);
+}
+
+/* Thin orbital ring around the planet */
+.artwork__ring {
+  position: absolute;
+  left: var(--art-orb-x);
+  top: var(--art-orb-y);
+  width: calc(var(--art-orb-size) * 1.9);
+  aspect-ratio: 3 / 1;
+  translate: -50% -50%;
+  rotate: var(--art-ring-rot);
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--starlight-ivory) 65%, transparent);
+  opacity: var(--art-ring-opacity);
+}
+
+/* Soft vignette for a cinematic finish */
+.artwork::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 40%, transparent 55%, rgb(0 0 0 / 0.28) 100%);
+}
