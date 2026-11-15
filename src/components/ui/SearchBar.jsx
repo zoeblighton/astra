@@ -23,6 +23,7 @@ export default function SearchBar({
   const [source, setSource] = useState('sample');
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
+  const [selectionMessage, setSelectionMessage] = useState('');
 
   const inputRef = useRef(null);
   const inputId = useId();
@@ -66,16 +67,23 @@ export default function SearchBar({
   const showList = showPanel && results.length > 0;
 
   function choose(item) {
+    const handled = onSelect?.(item);
+    if (handled === false) {
+      setSelectionMessage('This sample result has no linked artist profile.');
+      return;
+    }
+
     setQuery(item.title);
     setOpen(false);
     setActive(-1);
-    onSelect?.(item);
+    setSelectionMessage('');
   }
 
   function clear() {
     setQuery('');
     setResults([]);
     setActive(-1);
+    setSelectionMessage('');
     inputRef.current?.focus();
   }
 
@@ -91,9 +99,9 @@ export default function SearchBar({
         if (results.length) setActive((i) => (i <= 0 ? results.length - 1 : i - 1));
         break;
       case 'Enter':
-        if (showList && active >= 0) {
+        if (showList) {
           e.preventDefault();
-          choose(results[active]);
+          choose(results[active >= 0 ? active : 0]);
         }
         break;
       case 'Escape':
@@ -131,6 +139,7 @@ export default function SearchBar({
           onChange={(e) => {
             setQuery(e.target.value);
             setOpen(true);
+            setSelectionMessage('');
           }}
           onFocus={() => setOpen(true)}
           onBlur={() => setOpen(false)}
@@ -172,11 +181,14 @@ export default function SearchBar({
           ))}
         </ul>
 
-        {!showList && (
+        {!showList && !selectionMessage && (
           <p className="search__empty">
-            {loading ? 'Searching…' : `No matches for “${query.trim()}”`}
+            {loading
+              ? 'Searching…'
+              : `No matches for “${query.trim()}”`}
           </p>
         )}
+        {selectionMessage && <p className="search__empty" role="status">{selectionMessage}</p>}
         <p className="search__note">{source === 'spotify' ? 'Results from Spotify' : 'Sample catalogue'}</p>
       </div>
 

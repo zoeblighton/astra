@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Navigation from './Navigation.jsx';
 import SearchBar from '../ui/SearchBar.jsx';
 import { IconButton } from '../ui/Button.jsx';
+import { usePlayer } from '../player/PlayerContext.jsx';
 import { DEFAULT_ROUTE, routeHref } from '../../paths.js';
 import './Header.css';
 
@@ -11,9 +12,26 @@ import './Header.css';
  */
 export default function Header({ currentRoute }) {
   const [searchOpen, setSearchOpen] = useState(false);
+  const { playTrack } = usePlayer();
 
   // Close the mobile search panel when the page changes.
   useEffect(() => setSearchOpen(false), [currentRoute]);
+
+  function handleSearchSelect(item) {
+    if (item.type === 'track') {
+      playTrack(item);
+      setSearchOpen(false);
+      return true;
+    }
+
+    if (item.type === 'artist' && item.spotifyUrl) {
+      window.open(item.spotifyUrl, '_blank', 'noopener,noreferrer');
+      setSearchOpen(false);
+      return true;
+    }
+
+    return false;
+  }
 
   return (
     <header className="header">
@@ -27,7 +45,7 @@ export default function Header({ currentRoute }) {
         <div className={`header__search${searchOpen ? ' is-open' : ''}`}>
           <SearchBar
             autoFocus={searchOpen}
-            onSelect={() => setSearchOpen(false)}
+            onSelect={handleSearchSelect}
             onDismiss={() => setSearchOpen(false)}
           />
         </div>
