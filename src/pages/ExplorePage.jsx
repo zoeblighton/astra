@@ -4,6 +4,7 @@ import Button from '../components/ui/Button.jsx';
 import PageIntro from '../components/layout/PageIntro.jsx';
 import { searchCatalogue } from '../services/catalogue.js';
 import { usePlayer } from '../components/player/PlayerContext.jsx';
+import { useUniverse } from '../components/universe/UniverseContext.jsx';
 import './ExplorePage.css';
 
 const CATEGORIES = [
@@ -55,6 +56,7 @@ const CATEGORIES = [
 
 export default function ExplorePage() {
   const { playTrack } = usePlayer();
+  const { library, toggleSavedTrack, toggleFavouriteArtist, toggleDiscovery } = useUniverse();
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [activePath, setActivePath] = useState(CATEGORIES[0].paths[0]);
   const [items, setItems] = useState([]);
@@ -216,13 +218,61 @@ export default function ExplorePage() {
                     <span className="explore-card__sample">ASTRA sample</span>
                   )}
                   {item.type === 'track' && (
+                    <div className="explore-card__actions">
+                      <Button
+                        className="explore-card__queue"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => playTrack(item, items.filter((candidate) => candidate.type === 'track'))}
+                      >
+                        {item.spotifyUrl ? 'Add to player' : 'View sample in player'}
+                      </Button>
+                      <Button
+                        className="explore-card__save"
+                        variant="ghost"
+                        size="sm"
+                        aria-pressed={library.savedTracks.some((track) => track.id === item.id)}
+                        onClick={() => toggleSavedTrack(item)}
+                      >
+                        {library.savedTracks.some((track) => track.id === item.id) ? 'Saved' : 'Save track'}
+                      </Button>
+                    </div>
+                  )}
+                  {item.type === 'artist' && (
+                    <div className="explore-card__actions">
+                      <Button
+                        className="explore-card__save"
+                        variant="ghost"
+                        size="sm"
+                        aria-pressed={library.favouriteArtists.some((artist) => artist.id === item.id)}
+                        onClick={() => toggleFavouriteArtist(item)}
+                      >
+                        {library.favouriteArtists.some((artist) => artist.id === item.id) ? 'Following' : 'Follow artist'}
+                      </Button>
+                      <Button
+                        className="explore-card__save"
+                        variant="ghost"
+                        size="sm"
+                        aria-pressed={library.discoveries.some((saved) => saved.id === item.id && saved.type === item.type)}
+                        onClick={() => toggleDiscovery(item)}
+                      >
+                        {library.discoveries.some((saved) => saved.id === item.id && saved.type === item.type)
+                          ? 'Saved discovery'
+                          : 'Save discovery'}
+                      </Button>
+                    </div>
+                  )}
+                  {item.type === 'track' && (
                     <Button
-                      className="explore-card__queue"
+                      className="explore-card__save"
                       variant="ghost"
                       size="sm"
-                      onClick={() => playTrack(item, items.filter((candidate) => candidate.type === 'track'))}
+                      aria-pressed={library.discoveries.some((saved) => saved.id === item.id && saved.type === item.type)}
+                      onClick={() => toggleDiscovery(item)}
                     >
-                      {item.spotifyUrl ? 'Add to player' : 'View sample in player'}
+                      {library.discoveries.some((saved) => saved.id === item.id && saved.type === item.type)
+                        ? 'Saved discovery'
+                        : 'Save discovery'}
                     </Button>
                   )}
                 </div>

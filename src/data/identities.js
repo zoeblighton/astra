@@ -1,0 +1,58 @@
+export const IDENTITIES = [
+  {
+    id: 'dreamer',
+    name: 'The Dreamer',
+    essence: 'Atmospheric',
+    description: 'You gravitate towards immersive sounds, emotional melodies and music that creates a world of its own.',
+    genres: ['Dream pop', 'Ambient', 'Shoegaze'],
+  },
+  {
+    id: 'soul',
+    name: 'The Soul',
+    essence: 'Expressive',
+    description: 'Vocals, rhythm and emotional storytelling are the threads that draw you into a song.',
+    genres: ['Neo-soul', 'R&B', 'Jazz'],
+  },
+  {
+    id: 'explorer',
+    name: 'The Explorer',
+    essence: 'Adventurous',
+    description: 'You follow curiosity into unfamiliar artists, unexpected sounds and new musical worlds.',
+    genres: ['Experimental', 'World music', 'Alternative'],
+  },
+  {
+    id: 'rebel',
+    name: 'The Rebel',
+    essence: 'Unconventional',
+    description: 'You are drawn to raw energy, bold production and music that takes its own route.',
+    genres: ['Post-punk', 'Alternative rock', 'Grunge'],
+  },
+  {
+    id: 'observer',
+    name: 'The Observer',
+    essence: 'Reflective',
+    description: 'You notice intricate arrangements, instrumental detail and the quieter spaces in a composition.',
+    genres: ['Post-rock', 'Modern classical', 'Trip-hop'],
+  },
+  {
+    id: 'pulse',
+    name: 'The Pulse',
+    essence: 'Rhythmic',
+    description: 'A compelling beat, a bass line or a groove is often what makes a track stay with you.',
+    genres: ['Electronica', 'Funk', 'House'],
+  },
+  {
+    id: 'nostalgic',
+    name: 'The Nostalgic',
+    essence: 'Sentimental',
+    description: 'You are drawn to timeless melodies, familiar textures and the stories music can carry.',
+    genres: ['City pop', 'Indie rock', 'Vintage soul'],
+  },
+  {
+    id: 'alchemist',
+    name: 'The Alchemist',
+    essence: 'Eclectic',
+    description: 'You enjoy the unexpected meeting of styles and sounds that refuse to fit in one box.',
+    genres: ['Experimental', 'Electronica', 'Cross-genre'],
+  },
+];

@@ -158,7 +158,8 @@
   margin-top: var(--space-2);
 }
 
-.discover-track__queue {
+.discover-track__queue,
+.discover-track__save {
   justify-self: start;
   min-height: 32px;
   margin-top: var(--space-1);
@@ -166,8 +167,13 @@
   color: var(--color-text-secondary);
 }
 
-.discover-track__queue:hover {
+.discover-track__queue:hover,
+.discover-track__save:hover {
   color: var(--color-text);
+}
+
+.discover-track__save[aria-pressed='true'] {
+  color: var(--color-accent-soft);
 }
 
 .discover-message {

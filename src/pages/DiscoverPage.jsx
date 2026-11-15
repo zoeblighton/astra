@@ -5,6 +5,7 @@ import PageIntro from '../components/layout/PageIntro.jsx';
 import { routeHref } from '../paths.js';
 import { searchCatalogue } from '../services/catalogue.js';
 import { usePlayer } from '../components/player/PlayerContext.jsx';
+import { useUniverse } from '../components/universe/UniverseContext.jsx';
 import './DiscoverPage.css';
 
 const LISTENING_PATHS = [
@@ -17,6 +18,7 @@ const LISTENING_PATHS = [
 
 export default function DiscoverPage() {
   const { playTrack } = usePlayer();
+  const { library, toggleSavedTrack } = useUniverse();
   const [activePath, setActivePath] = useState(LISTENING_PATHS[0]);
   const [tracks, setTracks] = useState([]);
   const [source, setSource] = useState('sample');
@@ -129,6 +131,15 @@ export default function DiscoverPage() {
                     onClick={() => playTrack(track, tracks)}
                   >
                     {track.spotifyUrl ? 'Add to player' : 'View sample in player'}
+                  </Button>
+                  <Button
+                    className="discover-track__save"
+                    variant="ghost"
+                    size="sm"
+                    aria-pressed={library.savedTracks.some((saved) => saved.id === track.id)}
+                    onClick={() => toggleSavedTrack(track)}
+                  >
+                    {library.savedTracks.some((saved) => saved.id === track.id) ? 'Saved' : 'Save track'}
                   </Button>
                 </div>
               </article>

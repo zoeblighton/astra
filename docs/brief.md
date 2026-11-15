@@ -175,10 +175,10 @@ Include:
 - Label sample tracks as fictional and unplayable; never simulate playback for them
 
 ### My Universe
-A personal music library containing:
+A browser-local personal music library (the portfolio build does not sync with a Spotify account) containing:
 - Saved tracks
 - Favourite artists
-- Playlists
+- User-created playlists from saved tracks
 - Saved discoveries
 - Musical identity
 

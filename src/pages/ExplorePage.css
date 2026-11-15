@@ -211,15 +211,27 @@
   color: var(--color-accent-soft);
 }
 
-.explore-card__queue {
+.explore-card__queue,
+.explore-card__save {
   justify-self: start;
   min-height: 32px;
   padding-inline: var(--space-2);
   color: var(--color-text-secondary);
 }
 
-.explore-card__queue:hover {
+.explore-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.explore-card__queue:hover,
+.explore-card__save:hover {
   color: var(--color-text);
+}
+
+.explore-card__save[aria-pressed='true'] {
+  color: var(--color-accent-soft);
 }
 
 .explore-message {

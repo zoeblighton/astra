@@ -4,68 +4,11 @@ import Button from '../components/ui/Button.jsx';
 import PageIntro from '../components/layout/PageIntro.jsx';
 import { searchCatalogue } from '../services/catalogue.js';
 import { usePlayer } from '../components/player/PlayerContext.jsx';
+import { IDENTITIES } from '../data/identities.js';
+import { useUniverse } from '../components/universe/UniverseContext.jsx';
 import './FrequencyPage.css';
 
 const STORAGE_KEY = 'astra-frequency-result-v1';
-
-const IDENTITIES = [
-  {
-    id: 'dreamer',
-    name: 'The Dreamer',
-    essence: 'Atmospheric',
-    description: 'You gravitate towards immersive sounds, emotional melodies and music that creates a world of its own.',
-    genres: ['Dream pop', 'Ambient', 'Shoegaze'],
-  },
-  {
-    id: 'soul',
-    name: 'The Soul',
-    essence: 'Expressive',
-    description: 'Vocals, rhythm and emotional storytelling are the threads that draw you into a song.',
-    genres: ['Neo-soul', 'R&B', 'Jazz'],
-  },
-  {
-    id: 'explorer',
-    name: 'The Explorer',
-    essence: 'Adventurous',
-    description: 'You follow curiosity into unfamiliar artists, unexpected sounds and new musical worlds.',
-    genres: ['Experimental', 'World music', 'Alternative'],
-  },
-  {
-    id: 'rebel',
-    name: 'The Rebel',
-    essence: 'Unconventional',
-    description: 'You are drawn to raw energy, bold production and music that takes its own route.',
-    genres: ['Post-punk', 'Alternative rock', 'Grunge'],
-  },
-  {
-    id: 'observer',
-    name: 'The Observer',
-    essence: 'Reflective',
-    description: 'You notice intricate arrangements, instrumental detail and the quieter spaces in a composition.',
-    genres: ['Post-rock', 'Modern classical', 'Trip-hop'],
-  },
-  {
-    id: 'pulse',
-    name: 'The Pulse',
-    essence: 'Rhythmic',
-    description: 'A compelling beat, a bass line or a groove is often what makes a track stay with you.',
-    genres: ['Electronica', 'Funk', 'House'],
-  },
-  {
-    id: 'nostalgic',
-    name: 'The Nostalgic',
-    essence: 'Sentimental',
-    description: 'You are drawn to timeless melodies, familiar textures and the stories music can carry.',
-    genres: ['City pop', 'Indie rock', 'Vintage soul'],
-  },
-  {
-    id: 'alchemist',
-    name: 'The Alchemist',
-    essence: 'Eclectic',
-    description: 'You enjoy the unexpected meeting of styles and sounds that refuse to fit in one box.',
-    genres: ['Experimental', 'Electronica', 'Cross-genre'],
-  },
-];
 
 const IDENTITY_BY_ID = Object.fromEntries(IDENTITIES.map((identity) => [identity.id, identity]));
 
@@ -210,6 +153,7 @@ function OrbitMoods({ selectedMoods, onToggle }) {
 
 function FrequencyRecommendations({ identity, secondaryIdentity }) {
   const { playTrack } = usePlayer();
+  const { library, toggleSavedTrack, toggleFavouriteArtist } = useUniverse();
   const [recommendations, setRecommendations] = useState([]);
   const [source, setSource] = useState('sample');
   const [status, setStatus] = useState('loading');
@@ -294,16 +238,36 @@ function FrequencyRecommendations({ identity, secondaryIdentity }) {
                   <span className="frequency-rec-card__sample">ASTRA sample</span>
                 )}
                 {item.type === 'track' && (
+                  <div className="frequency-rec-card__actions">
+                    <button
+                      className="frequency-rec-card__queue"
+                      type="button"
+                      onClick={() => playTrack(
+                        item,
+                        recommendations.filter((candidate) =>
+                          candidate.type === 'track' && candidate.source === item.source),
+                      )}
+                    >
+                      {item.spotifyUrl ? 'Add to player' : 'View sample in player'}
+                    </button>
+                    <button
+                      className="frequency-rec-card__save"
+                      type="button"
+                      aria-pressed={library.savedTracks.some((track) => track.id === item.id)}
+                      onClick={() => toggleSavedTrack(item)}
+                    >
+                      {library.savedTracks.some((track) => track.id === item.id) ? 'Saved' : 'Save track'}
+                    </button>
+                  </div>
+                )}
+                {item.type === 'artist' && (
                   <button
-                    className="frequency-rec-card__queue"
+                    className="frequency-rec-card__save"
                     type="button"
-                    onClick={() => playTrack(
-                      item,
-                      recommendations.filter((candidate) =>
-                        candidate.type === 'track' && candidate.source === item.source),
-                    )}
+                    aria-pressed={library.favouriteArtists.some((artist) => artist.id === item.id)}
+                    onClick={() => toggleFavouriteArtist(item)}
                   >
-                    {item.spotifyUrl ? 'Add to player' : 'View sample in player'}
+                    {library.favouriteArtists.some((artist) => artist.id === item.id) ? 'Following' : 'Follow artist'}
                   </button>
                 )}
               </div>

@@ -526,7 +526,8 @@
   margin-top: var(--space-2);
 }
 
-.frequency-rec-card__queue {
+.frequency-rec-card__queue,
+.frequency-rec-card__save {
   justify-self: start;
   min-height: 32px;
   margin-top: var(--space-1);
@@ -537,9 +538,20 @@
   font-size: var(--text-meta);
 }
 
-.frequency-rec-card__queue:hover {
+.frequency-rec-card__queue:hover,
+.frequency-rec-card__save:hover {
   color: var(--color-text);
   border-color: var(--color-secondary);
+}
+
+.frequency-rec-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.frequency-rec-card__save[aria-pressed='true'] {
+  color: var(--color-accent-soft);
 }
 
 .frequency-rec-card__details > a:hover {

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import Artwork from '../ui/Artwork.jsx';
 import { IconButton } from '../ui/Button.jsx';
 import Icon from '../ui/Icon.jsx';
 import { usePlayer } from './PlayerContext.jsx';
@@ -41,20 +40,94 @@ export default function NowPlayingPlayer() {
     nextTrack,
     clearPlayer,
   } = usePlayer();
+  const playerRef = useRef(null);
   const planetRef = useRef(null);
   const captureRef = useRef(null);
-  const [panelOpen, setPanelOpen] = useState(false);
+  const dragRef = useRef(null);
   const [captureState, setCaptureState] = useState('off');
   const [captureMessage, setCaptureMessage] = useState('');
+  const [position, setPosition] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  function clampPosition(left, top) {
+    const player = playerRef.current;
+    if (!player) return { x: left, y: top };
+
+    const margin = 8;
+    return {
+      x: Math.min(Math.max(margin, left), Math.max(margin, window.innerWidth - player.offsetWidth - margin)),
+      y: Math.min(Math.max(margin, top), Math.max(margin, window.innerHeight - player.offsetHeight - margin)),
+    };
+  }
+
+  function startDragging(event) {
+    if (event.button !== 0) return;
+
+    event.preventDefault();
+    const bounds = playerRef.current.getBoundingClientRect();
+    dragRef.current = {
+      pointerId: event.pointerId,
+      pointerX: event.clientX,
+      pointerY: event.clientY,
+      left: bounds.left,
+      top: bounds.top,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setIsDragging(true);
+  }
+
+  function dragPlayer(event) {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+
+    setPosition(clampPosition(
+      drag.left + event.clientX - drag.pointerX,
+      drag.top + event.clientY - drag.pointerY,
+    ));
+  }
+
+  function stopDragging() {
+    dragRef.current = null;
+    setIsDragging(false);
+  }
+
+  function moveWithKeyboard(event) {
+    const offsets = {
+      ArrowUp: [0, -16],
+      ArrowDown: [0, 16],
+      ArrowLeft: [-16, 0],
+      ArrowRight: [16, 0],
+    };
+    const offset = offsets[event.key];
+    if (!offset) return;
+
+    event.preventDefault();
+    const bounds = playerRef.current.getBoundingClientRect();
+    setPosition(clampPosition(
+      (position?.x ?? bounds.left) + offset[0],
+      (position?.y ?? bounds.top) + offset[1],
+    ));
+  }
 
   useEffect(() => () => {
     releaseAudioCapture(captureRef.current);
     captureRef.current = null;
   }, []);
 
+  useEffect(() => {
+    if (!position) return undefined;
+
+    function keepPlayerInView() {
+      const bounds = playerRef.current.getBoundingClientRect();
+      setPosition(clampPosition(bounds.left, bounds.top));
+    }
+
+    window.addEventListener('resize', keepPlayerInView);
+    return () => window.removeEventListener('resize', keepPlayerInView);
+  }, [position]);
+
   async function startAudioCapture() {
-    setPanelOpen(true);
-    setCaptureMessage('');
+    setCaptureMessage('Choose the Spotify tab and enable its audio-sharing option.');
 
     if (!navigator.mediaDevices?.getDisplayMedia || !window.AudioContext) {
       setCaptureMessage('Tab audio visualisation is not supported by this browser. Try a current version of Chrome or Edge over HTTPS.');
@@ -121,6 +194,7 @@ export default function NowPlayingPlayer() {
       captureRef.current = capture;
       stream.getTracks().forEach((track) => track.addEventListener('ended', capture.onTrackEnded));
       setCaptureState('active');
+      setCaptureMessage('Visualiser connected to shared tab audio.');
       updateVisualiser();
     } catch (error) {
       stream?.getTracks().forEach((track) => track.stop());
@@ -162,55 +236,12 @@ export default function NowPlayingPlayer() {
   });
 
   return (
-    <aside className="now-playing" aria-label="Now playing">
-      {panelOpen && (
-        <section className="now-playing__panel" aria-label="Playback and visualiser controls">
-          <div className="now-playing__panel-heading">
-            <div>
-              <p className="now-playing__panel-eyebrow">NOW PLAYING</p>
-              <h2>{title}</h2>
-              <p>{artist}</p>
-            </div>
-            <IconButton
-              icon="close"
-              size="sm"
-              label="Close playback panel"
-              onClick={() => setPanelOpen(false)}
-            />
-          </div>
-
-          {isSpotifyTrack ? (
-            <>
-              <iframe
-                key={spotifyTrackId}
-                className="now-playing__embed"
-                title={`Spotify player for ${title} by ${artist}`}
-                src={`https://open.spotify.com/embed/track/${spotifyTrackId}?utm_source=generator&theme=0`}
-                width="100%"
-                height="152"
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                loading="lazy"
-              />
-              <a className="now-playing__spotify-link" href={currentTrack.spotifyUrl} target="_blank" rel="noopener noreferrer">
-                Open on Spotify <span aria-hidden="true">↗</span>
-              </a>
-            </>
-          ) : (
-            <p className="now-playing__sample-note">
-              This is fictional ASTRA sample data. It has no audio and cannot be played.
-            </p>
-          )}
-
-          <p className="now-playing__capture-help">
-            To sync the visualiser, choose the ASTRA tab in the share dialog and allow tab audio.
-            Audio is analysed in this browser and is not recorded or uploaded.
-          </p>
-          {captureMessage && (
-            <p className="now-playing__capture-message" role="status">{captureMessage}</p>
-          )}
-        </section>
-      )}
-
+    <aside
+      ref={playerRef}
+      className={`now-playing${isDragging ? ' now-playing--dragging' : ''}`}
+      style={position ? { left: `${position.x}px`, top: `${position.y}px`, right: 'auto', bottom: 'auto' } : undefined}
+      aria-label="Now playing"
+    >
       <div
         ref={planetRef}
         className={`now-playing__planet${captureState === 'active' ? ' now-playing__planet--reactive' : ''}`}
@@ -222,7 +253,21 @@ export default function NowPlayingPlayer() {
         <div className="now-playing__orbit now-playing__orbit--inner" aria-hidden="true" />
 
         <div className="now-playing__topline">
-          <span className="now-playing__eyebrow">NOW PLAYING</span>
+          <button
+            type="button"
+            className="now-playing__drag-handle"
+            aria-label="Move player. Drag to reposition, or use the arrow keys."
+            title="Drag to move · arrow keys to reposition"
+            onPointerDown={startDragging}
+            onPointerMove={dragPlayer}
+            onPointerUp={stopDragging}
+            onPointerCancel={stopDragging}
+            onLostPointerCapture={stopDragging}
+            onKeyDown={moveWithKeyboard}
+          >
+            <span className="now-playing__drag-grip" aria-hidden="true">⠿</span>
+            <span className="now-playing__eyebrow">NOW PLAYING</span>
+          </button>
           <IconButton
             icon="close"
             size="sm"
@@ -246,12 +291,7 @@ export default function NowPlayingPlayer() {
           )}
         </div>
 
-        <div className="now-playing__art-wrap" aria-hidden="true">
-          {currentTrack.imageUrl ? (
-            <img className="now-playing__album-art" src={currentTrack.imageUrl} alt="" />
-          ) : (
-            <Artwork seed={currentTrack.id} shape="round" className="now-playing__album-art" />
-          )}
+        <div className="now-playing__visualiser-core" aria-hidden="true">
           <div className="now-playing__spectrum" aria-hidden="true">{bars}</div>
           <div className="now-playing__lens" aria-hidden="true" />
         </div>
@@ -268,14 +308,26 @@ export default function NowPlayingPlayer() {
             onClick={previousTrack}
             disabled={!canGoPrevious}
           />
-          <IconButton
-            icon="headphones"
-            variant="primary"
-            label="Open playback controls"
-            className="now-playing__controls-main"
-            aria-expanded={panelOpen}
-            onClick={() => setPanelOpen((open) => !open)}
-          />
+          {isSpotifyTrack ? (
+            <a
+              className="now-playing__launch"
+              href={currentTrack.spotifyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Open ${title} by ${artist} on Spotify`}
+              title={`Open ${title} on Spotify`}
+            >
+              <Icon name="play" size={22} />
+            </a>
+          ) : (
+            <IconButton
+              icon="play"
+              variant="primary"
+              label="Sample tracks cannot be played"
+              className="now-playing__launch"
+              disabled
+            />
+          )}
           <IconButton
             icon="skipForward"
             size="sm"
@@ -290,12 +342,12 @@ export default function NowPlayingPlayer() {
           className={`now-playing__visualiser-toggle${captureState === 'active' ? ' is-active' : ''}`}
           aria-label={!isSpotifyTrack
             ? 'Audio visualiser is unavailable for sample tracks'
-            : captureState === 'active' ? 'Stop audio visualiser' : 'Share tab audio for visualiser'}
+            : captureState === 'active' ? 'Stop audio visualiser' : 'Share Spotify tab audio for visualiser'}
+          aria-describedby="now-playing-visualiser-help"
           aria-pressed={captureState === 'active'}
-          disabled={captureState === 'starting'}
-          title={!isSpotifyTrack
+          title={captureMessage || (!isSpotifyTrack
             ? 'Audio visualiser is unavailable for sample tracks'
-            : captureState === 'active' ? 'Stop audio visualiser' : 'Share tab audio for visualiser'}
+            : captureState === 'active' ? 'Stop audio visualiser' : 'Share Spotify tab audio for visualiser')}
           onClick={captureState === 'active' ? stopAudioCapture : startAudioCapture}
           disabled={!isSpotifyTrack || captureState === 'starting'}
         >
@@ -306,6 +358,12 @@ export default function NowPlayingPlayer() {
               : captureState === 'active' ? 'LIVE' : captureState === 'starting' ? 'CONNECTING' : 'VISUALISE'}
           </span>
         </button>
+        <p id="now-playing-visualiser-help" className="visually-hidden">
+          Choose the Spotify tab and enable audio sharing. Audio is analysed in this browser and is not recorded or uploaded.
+        </p>
+        <p className="visually-hidden" role="status" aria-live="polite">
+          {captureMessage}
+        </p>
       </div>
     </aside>
   );
