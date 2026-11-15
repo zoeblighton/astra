@@ -8,6 +8,93 @@
   isolation: isolate;
 }
 
+.now-playing__playback {
+  position: absolute;
+  z-index: 10;
+  width: min(340px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  padding: var(--space-4);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-feature);
+  background:
+    radial-gradient(ellipse at 88% 0%, rgb(var(--nebula-violet-rgb) / 0.2), transparent 52%),
+    rgb(var(--deep-graphite-rgb) / 0.97);
+  box-shadow: var(--shadow-lift);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+}
+
+.now-playing__playback:not(.is-open) {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.now-playing__playback.is-open {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.now-playing__playback-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.now-playing__playback-eyebrow {
+  margin-bottom: 2px;
+  color: var(--color-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-mono);
+}
+
+.now-playing__playback-heading h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  line-height: var(--leading-snug);
+}
+
+.now-playing__playback-heading div > p:last-child {
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+}
+
+.now-playing__embed {
+  display: block;
+  min-height: 152px;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-card);
+}
+
+.now-playing__embed iframe {
+  display: block;
+  border: 0;
+  border-radius: inherit;
+}
+
+.now-playing__playback-status {
+  min-height: 1.4em;
+  margin-bottom: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+}
+
+.now-playing__spotify-link {
+  display: inline-block;
+  margin-top: var(--space-2);
+  color: var(--color-accent-soft);
+  font-size: var(--text-small);
+  text-underline-offset: 3px;
+}
+
+.now-playing__spotify-link:hover {
+  color: var(--color-text);
+}
+
 .now-playing__planet {
   position: relative;
   width: 100%;
@@ -67,6 +154,67 @@
 .now-playing__planet::after {
   border: 1px solid rgb(var(--starlight-ivory-rgb) / 0.12);
   box-shadow: inset 0 0 10px rgb(var(--starlight-ivory-rgb) / 0.06);
+}
+
+.now-playing__geometry {
+  position: absolute;
+  inset: 12%;
+  z-index: 3;
+  width: 76%;
+  height: 76%;
+  overflow: visible;
+  color: var(--color-secondary);
+  opacity: calc(0.48 + var(--audio-mid, 0) * 0.22);
+  filter: drop-shadow(0 0 3px rgb(var(--atmospheric-lilac-rgb) / 0.38));
+  pointer-events: none;
+}
+
+.now-playing__geometry-spin {
+  transform: scale(calc(0.98 + var(--audio-low, 0) * 0.04));
+  transform-origin: center;
+  transform-box: fill-box;
+  transition: transform 90ms linear;
+}
+
+.now-playing__geometry-ring,
+.now-playing__geometry-circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+
+.now-playing__geometry-ring--fine,
+.now-playing__geometry-circle--outer {
+  color: var(--color-accent-soft);
+  opacity: 0.58;
+  stroke-width: 0.5;
+}
+
+.now-playing__geometry-lines {
+  fill: none;
+  stroke: rgb(var(--starlight-ivory-rgb) / 0.34);
+  stroke-width: 0.45;
+  vector-effect: non-scaling-stroke;
+}
+
+.now-playing__geometry-lines--inner {
+  stroke: rgb(var(--clay-copper-rgb) / 0.55);
+  stroke-width: 0.65;
+}
+
+.now-playing__geometry-rays {
+  fill: none;
+  stroke: rgb(var(--starlight-ivory-rgb) / 0.2);
+  stroke-width: 0.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.now-playing__geometry-star {
+  fill: none;
+  stroke: rgb(var(--clay-copper-rgb) / 0.42);
+  stroke-width: 0.55;
+  vector-effect: non-scaling-stroke;
 }
 
 .now-playing__topline {
@@ -365,7 +513,6 @@
   box-shadow:
     0 0 18px rgb(var(--clay-copper-rgb) / 0.3),
     inset 0 1px 1px rgb(var(--starlight-ivory-rgb) / 0.48);
-  text-decoration: none;
   transition:
     background-color var(--duration-fast) var(--ease-out),
     transform var(--duration-fast) var(--ease-out),
@@ -376,6 +523,11 @@
   transform: scale(1.06);
   background: var(--color-accent-soft);
   box-shadow: var(--glow-copper), var(--shadow-soft);
+}
+
+.now-playing__controls .now-playing__launch[aria-expanded='true'] {
+  border-color: rgb(var(--starlight-ivory-rgb) / 0.62);
+  box-shadow: 0 0 22px rgb(var(--clay-copper-rgb) / 0.5);
 }
 
 .now-playing__visualiser-toggle {
@@ -459,6 +611,10 @@
 
   .now-playing__orbit--outer,
   .now-playing__orbit--tilted {
+    transform: none;
+  }
+
+  .now-playing__geometry-spin {
     transform: none;
   }
 }

@@ -570,6 +570,17 @@
   justify-content: flex-start;
 }
 
+@media (pointer: coarse) {
+  .frequency-orbit__mood {
+    min-height: 44px;
+  }
+
+  .frequency-rec-card__queue,
+  .frequency-rec-card__save {
+    min-height: 44px;
+  }
+}
+
 @media (min-width: 768px) {
   .frequency-intro,
   .frequency-step,

@@ -4,6 +4,35 @@ import Icon from '../ui/Icon.jsx';
 import { usePlayer } from './PlayerContext.jsx';
 import './NowPlayingPlayer.css';
 
+let spotifyIframeApiPromise;
+
+function loadSpotifyIframeApi() {
+  if (!spotifyIframeApiPromise) {
+    spotifyIframeApiPromise = new Promise((resolve, reject) => {
+      const previousCallback = window.onSpotifyIframeApiReady;
+      const script = document.createElement('script');
+      script.src = 'https://open.spotify.com/embed/iframe-api/v1';
+      script.async = true;
+      script.onerror = () => {
+        window.onSpotifyIframeApiReady = previousCallback;
+        reject(new Error('Spotify’s playback controls could not be loaded.'));
+      };
+      window.onSpotifyIframeApiReady = (api) => {
+        window.onSpotifyIframeApiReady = previousCallback;
+        try {
+          previousCallback?.(api);
+          resolve(api);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  return spotifyIframeApiPromise;
+}
+
 function releaseAudioCapture(capture) {
   if (!capture) return;
 
@@ -28,6 +57,30 @@ function bandLevel(data, start, end) {
   return end > start ? total / (end - start) / 255 : 0;
 }
 
+const geometryPetals = Array.from({ length: 6 }, (_, index) => {
+  const angle = (index * Math.PI) / 3;
+  return {
+    x: 100 + Math.cos(angle) * 42,
+    y: 100 + Math.sin(angle) * 42,
+  };
+});
+
+const geometryOuterPetals = Array.from({ length: 12 }, (_, index) => {
+  const angle = (index * Math.PI) / 6;
+  return {
+    x: 100 + Math.cos(angle) * 76,
+    y: 100 + Math.sin(angle) * 76,
+  };
+});
+
+const geometrySpokes = Array.from({ length: 12 }, (_, index) => {
+  const angle = (index * Math.PI) / 6;
+  return {
+    x: 100 + Math.cos(angle) * 92,
+    y: 100 + Math.sin(angle) * 92,
+  };
+});
+
 export default function NowPlayingPlayer() {
   const {
     currentTrack,
@@ -41,9 +94,14 @@ export default function NowPlayingPlayer() {
     clearPlayer,
   } = usePlayer();
   const playerRef = useRef(null);
+  const playbackRef = useRef(null);
+  const embedRef = useRef(null);
+  const embedControllerRef = useRef(null);
   const planetRef = useRef(null);
   const captureRef = useRef(null);
   const dragRef = useRef(null);
+  const [playbackOpen, setPlaybackOpen] = useState(false);
+  const [playbackStatus, setPlaybackStatus] = useState('idle');
   const [captureState, setCaptureState] = useState('off');
   const [captureMessage, setCaptureMessage] = useState('');
   const [position, setPosition] = useState(null);
@@ -126,8 +184,92 @@ export default function NowPlayingPlayer() {
     return () => window.removeEventListener('resize', keepPlayerInView);
   }, [position]);
 
+  useEffect(() => {
+    const container = embedRef.current;
+    if (!spotifyTrackId || !container) {
+      setPlaybackStatus('idle');
+      return undefined;
+    }
+
+    let cancelled = false;
+    let controller = null;
+    const embedTarget = document.createElement('div');
+    container.replaceChildren(embedTarget);
+    setPlaybackStatus('loading');
+
+    loadSpotifyIframeApi()
+      .then((api) => {
+        if (cancelled) return;
+
+        api.createController(
+          embedTarget,
+          { uri: `spotify:track:${spotifyTrackId}`, width: '100%', height: 152 },
+          (createdController) => {
+            if (cancelled) {
+              createdController.destroy();
+              return;
+            }
+
+            controller = createdController;
+            embedControllerRef.current = createdController;
+            setPlaybackStatus('paused');
+            createdController.addListener('playback_update', (event) => {
+              if (embedControllerRef.current !== createdController) return;
+              setPlaybackStatus(event.data.isPaused ? 'paused' : 'playing');
+            });
+          },
+        );
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        console.error('Unable to initialise Spotify playback.', error);
+        setPlaybackStatus('error');
+      });
+
+    return () => {
+      cancelled = true;
+      if (embedControllerRef.current === controller) embedControllerRef.current = null;
+      controller?.destroy();
+      container.replaceChildren();
+    };
+  }, [spotifyTrackId]);
+
+  useEffect(() => {
+    if (!playbackOpen) return undefined;
+
+    function placePlaybackPanel() {
+      const player = playerRef.current;
+      const panel = playbackRef.current;
+      if (!player || !panel) return;
+
+      const playerBounds = player.getBoundingClientRect();
+      const panelWidth = panel.offsetWidth;
+      const panelHeight = panel.offsetHeight;
+      const margin = 12;
+      const left = Math.min(
+        Math.max(margin, playerBounds.left + (playerBounds.width - panelWidth) / 2),
+        Math.max(margin, window.innerWidth - panelWidth - margin),
+      );
+      let top = playerBounds.top - panelHeight - 14;
+      if (top < margin) top = playerBounds.bottom + 14;
+      if (top + panelHeight > window.innerHeight - margin) {
+        top = Math.max(margin, window.innerHeight - panelHeight - margin);
+      }
+
+      panel.style.left = `${left - playerBounds.left}px`;
+      panel.style.top = `${top - playerBounds.top}px`;
+    }
+
+    const frameId = requestAnimationFrame(placePlaybackPanel);
+    window.addEventListener('resize', placePlaybackPanel);
+    return () => {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener('resize', placePlaybackPanel);
+    };
+  }, [playbackOpen, position, spotifyTrackId]);
+
   async function startAudioCapture() {
-    setCaptureMessage('Choose the Spotify tab and enable its audio-sharing option.');
+    setCaptureMessage('Choose the ASTRA tab and enable its audio-sharing option.');
 
     if (!navigator.mediaDevices?.getDisplayMedia || !window.AudioContext) {
       setCaptureMessage('Tab audio visualisation is not supported by this browser. Try a current version of Chrome or Edge over HTTPS.');
@@ -144,7 +286,7 @@ export default function NowPlayingPlayer() {
       if (stream.getAudioTracks().length === 0) {
         stream.getTracks().forEach((track) => track.stop());
         setCaptureState('off');
-        setCaptureMessage('No tab audio was shared. Choose the Spotify tab and enable its audio-sharing option.');
+        setCaptureMessage('No tab audio was shared. Choose the ASTRA tab and enable its audio-sharing option.');
         return;
       }
 
@@ -242,6 +384,43 @@ export default function NowPlayingPlayer() {
       style={position ? { left: `${position.x}px`, top: `${position.y}px`, right: 'auto', bottom: 'auto' } : undefined}
       aria-label="Now playing"
     >
+      {isSpotifyTrack && (
+        <section
+          ref={playbackRef}
+          className={`now-playing__playback${playbackOpen ? ' is-open' : ''}`}
+          aria-label="Spotify playback"
+          aria-hidden={!playbackOpen}
+        >
+          <div className="now-playing__playback-heading">
+            <div>
+              <p className="now-playing__playback-eyebrow">SPOTIFY PLAYER</p>
+              <h2>{title}</h2>
+              <p>{artist}</p>
+            </div>
+            <IconButton
+              icon="close"
+              size="sm"
+              label="Close Spotify player"
+              onClick={() => setPlaybackOpen(false)}
+            />
+          </div>
+          <p className="now-playing__playback-status" role="status" aria-live="polite">
+            {playbackStatus === 'loading' && 'Preparing Spotify playback…'}
+            {playbackStatus === 'error' && 'Spotify controls could not be loaded. Open the track in Spotify instead.'}
+            {playbackStatus === 'paused' && 'Paused. Press the planet’s play button or use Spotify’s controls below.'}
+            {playbackStatus === 'playing' && 'Playing through Spotify.'}
+          </p>
+          <div
+            ref={embedRef}
+            className="now-playing__embed"
+            aria-label={`Spotify player for ${title} by ${artist}`}
+          />
+          <a className="now-playing__spotify-link" href={currentTrack.spotifyUrl} target="_blank" rel="noopener noreferrer">
+            Having trouble? Open in Spotify <span aria-hidden="true">↗</span>
+          </a>
+        </section>
+      )}
+
       <div
         ref={planetRef}
         className={`now-playing__planet${captureState === 'active' ? ' now-playing__planet--reactive' : ''}`}
@@ -251,6 +430,63 @@ export default function NowPlayingPlayer() {
         <div className="now-playing__orbit now-playing__orbit--outer" aria-hidden="true" />
         <div className="now-playing__orbit now-playing__orbit--tilted" aria-hidden="true" />
         <div className="now-playing__orbit now-playing__orbit--inner" aria-hidden="true" />
+
+        <svg
+          className="now-playing__geometry"
+          viewBox="0 0 200 200"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <g className="now-playing__geometry-spin">
+            <circle className="now-playing__geometry-ring" cx="100" cy="100" r="92" />
+            <circle className="now-playing__geometry-ring now-playing__geometry-ring--fine" cx="100" cy="100" r="82" />
+            <path
+              className="now-playing__geometry-lines"
+              d={`M ${geometrySpokes.map(({ x, y }) => `${x} ${y}`).join(' L ')} Z`}
+            />
+            <path
+              className="now-playing__geometry-rays"
+              d={geometrySpokes.map(({ x, y }) => `M 100 100 L ${x} ${y}`).join(' ')}
+            />
+            <path
+              className="now-playing__geometry-lines now-playing__geometry-lines--inner"
+              d={`M ${geometryPetals.map(({ x, y }) => `${x} ${y}`).join(' L ')} Z`}
+            />
+            <path
+              className="now-playing__geometry-star"
+              d={`${geometryPetals
+                .filter((_, index) => index % 2 === 0)
+                .map(({ x, y }, index) => `${index === 0 ? 'M' : 'L'} ${x} ${y}`)
+                .join(' ')} Z`}
+            />
+            <path
+              className="now-playing__geometry-star"
+              d={`${geometryPetals
+                .filter((_, index) => index % 2 === 1)
+                .map(({ x, y }, index) => `${index === 0 ? 'M' : 'L'} ${x} ${y}`)
+                .join(' ')} Z`}
+            />
+            {geometryPetals.map(({ x, y }, index) => (
+              <circle
+                key={`petal-${index}`}
+                className="now-playing__geometry-circle"
+                cx={x}
+                cy={y}
+                r="42"
+              />
+            ))}
+            {geometryOuterPetals.map(({ x, y }, index) => (
+              <circle
+                key={`outer-petal-${index}`}
+                className="now-playing__geometry-circle now-playing__geometry-circle--outer"
+                cx={x}
+                cy={y}
+                r="22"
+              />
+            ))}
+            <circle className="now-playing__geometry-ring" cx="100" cy="100" r="30" />
+          </g>
+        </svg>
 
         <div className="now-playing__topline">
           <button
@@ -309,16 +545,19 @@ export default function NowPlayingPlayer() {
             disabled={!canGoPrevious}
           />
           {isSpotifyTrack ? (
-            <a
+            <button
+              type="button"
               className="now-playing__launch"
-              href={currentTrack.spotifyUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Open ${title} by ${artist} on Spotify`}
-              title={`Open ${title} on Spotify`}
+              aria-label={playbackStatus === 'playing' ? `Pause ${title}` : `Play ${title}`}
+              aria-expanded={playbackOpen}
+              title={playbackStatus === 'playing' ? 'Pause via Spotify' : 'Play via Spotify'}
+              onClick={() => {
+                setPlaybackOpen(true);
+                embedControllerRef.current?.togglePlay();
+              }}
             >
-              <Icon name="play" size={22} />
-            </a>
+              <Icon name={playbackStatus === 'playing' ? 'pause' : 'play'} size={22} />
+            </button>
           ) : (
             <IconButton
               icon="play"
@@ -342,12 +581,12 @@ export default function NowPlayingPlayer() {
           className={`now-playing__visualiser-toggle${captureState === 'active' ? ' is-active' : ''}`}
           aria-label={!isSpotifyTrack
             ? 'Audio visualiser is unavailable for sample tracks'
-            : captureState === 'active' ? 'Stop audio visualiser' : 'Share Spotify tab audio for visualiser'}
+            : captureState === 'active' ? 'Stop audio visualiser' : 'Share ASTRA tab audio for visualiser'}
           aria-describedby="now-playing-visualiser-help"
           aria-pressed={captureState === 'active'}
           title={captureMessage || (!isSpotifyTrack
             ? 'Audio visualiser is unavailable for sample tracks'
-            : captureState === 'active' ? 'Stop audio visualiser' : 'Share Spotify tab audio for visualiser')}
+            : captureState === 'active' ? 'Stop audio visualiser' : 'Share ASTRA tab audio for visualiser')}
           onClick={captureState === 'active' ? stopAudioCapture : startAudioCapture}
           disabled={!isSpotifyTrack || captureState === 'starting'}
         >
@@ -359,7 +598,7 @@ export default function NowPlayingPlayer() {
           </span>
         </button>
         <p id="now-playing-visualiser-help" className="visually-hidden">
-          Choose the Spotify tab and enable audio sharing. Audio is analysed in this browser and is not recorded or uploaded.
+          Choose the ASTRA tab and enable audio sharing. Audio is analysed in this browser and is not recorded or uploaded.
         </p>
         <p className="visually-hidden" role="status" aria-live="polite">
           {captureMessage}

@@ -168,7 +168,7 @@ Include:
 - Album artwork
 - Track title
 - Artist name
-- Spotify-hosted playback controls for Spotify tracks; ASTRA does not stream or host audio
+- Spotify-hosted playback controls embedded in ASTRA for Spotify tracks; ASTRA does not stream or host audio
 - Queue navigation (previous and next)
 - Playback progress supplied by the Spotify embed
 - Optional audio-reactive visualiser with glass-like orbital forms and glowing artwork. Sync requires the user to share the Spotify browser tab with audio; analysis stays in the browser and is not recorded or uploaded.

@@ -13,12 +13,12 @@ const CATEGORIES = [
     label: 'Mood',
     description: 'Start with how you want the music to feel.',
     paths: [
-      { label: 'Dreamy', query: 'Dreamy' },
-      { label: 'Soulful', query: 'Soulful' },
-      { label: 'Restless', query: 'Restless' },
-      { label: 'Nostalgic', query: 'Nostalgic' },
-      { label: 'Uplifting', query: 'Uplifting' },
-      { label: 'Tender', query: 'Tender' },
+      { label: 'Dreamy', queries: ['dream pop', 'ambient', 'shoegaze'] },
+      { label: 'Soulful', queries: ['neo-soul', 'R&B', 'jazz soul'] },
+      { label: 'Restless', queries: ['post-punk', 'garage rock', 'punk'] },
+      { label: 'Nostalgic', queries: ['city pop', 'classic soul', 'indie rock'] },
+      { label: 'Uplifting', queries: ['disco', 'funk', 'upbeat soul'] },
+      { label: 'Tender', queries: ['indie folk', 'acoustic folk', 'soft rock'] },
     ],
   },
   {
@@ -68,10 +68,23 @@ export default function ExplorePage() {
     setItems([]);
     setStatus('loading');
 
-    searchCatalogue(activePath.query, { limit: 10, signal: controller.signal })
-      .then(({ results, source: resultSource }) => {
+    const queries = activePath.queries ?? [activePath.query];
+    Promise.all(queries.map((query) => searchCatalogue(query, { limit: 10, signal: controller.signal })))
+      .then((responses) => {
+        const seen = new Set();
+        const results = responses
+          .flatMap((response) => response.results.map((item) => ({ ...item, source: response.source })))
+          .filter((item) => {
+            const key = `${item.source}-${item.type}-${item.id}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          })
+          .sort((a, b) => Number(a.type !== 'track') - Number(b.type !== 'track'))
+          .slice(0, 10);
+        const sources = new Set(responses.map((response) => response.source));
         setItems(results);
-        setSource(resultSource);
+        setSource(sources.size > 1 ? 'mixed' : responses[0]?.source ?? 'sample');
         setStatus('ready');
       })
       .catch((error) => {
@@ -150,7 +163,11 @@ export default function ExplorePage() {
           </div>
           {status === 'ready' && (
             <span className={`explore-source explore-source--${source}`}>
-              {source === 'spotify' ? 'Live Spotify results' : 'ASTRA sample collection'}
+              {source === 'spotify'
+                ? 'Spotify catalogue · curated by style'
+                : source === 'mixed'
+                  ? 'Spotify + ASTRA samples · curated by style'
+                  : 'ASTRA sample collection · curated by style'}
             </span>
           )}
         </div>
@@ -173,7 +190,7 @@ export default function ExplorePage() {
           <div className="explore-results__grid">
             {items.map((item) => (
               <article className="explore-card" key={`${item.type}-${item.id}`}>
-                {source === 'spotify' && item.imageUrl ? (
+                {item.source === 'spotify' && item.imageUrl ? (
                   <img
                     className="explore-card__image"
                     src={item.imageUrl}
@@ -282,9 +299,12 @@ export default function ExplorePage() {
         )}
 
         <p className="explore-attribution">
+          Mood paths use curated genre and style searches, not words in track titles. Spotify does not provide audio features to verify a track’s mood.
           {source === 'spotify'
-            ? 'Music and artist information provided by Spotify. Open a result to listen on Spotify.'
-            : 'Fictional music created for ASTRA. This collection is sample data, not a Spotify playlist.'}
+            ? ' Music and artist information provided by Spotify. Open a result to listen on Spotify.'
+            : source === 'mixed'
+              ? ' Results may include Spotify catalogue entries and clearly labelled ASTRA samples.'
+              : ' Fictional results are ASTRA sample data, not a Spotify playlist.'}
         </p>
       </section>
     </div>

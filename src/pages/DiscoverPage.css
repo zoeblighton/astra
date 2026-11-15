@@ -184,6 +184,17 @@
   border-radius: var(--radius-card);
 }
 
+@media (pointer: coarse) {
+  .discover-path {
+    min-height: 44px;
+  }
+
+  .discover-track__queue,
+  .discover-track__save {
+    min-height: 44px;
+  }
+}
+
 .discover-invitation {
   display: flex;
   align-items: center;

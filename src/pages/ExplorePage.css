@@ -242,6 +242,18 @@
   border-radius: var(--radius-card);
 }
 
+@media (pointer: coarse) {
+  .explore-tabs__tab,
+  .explore-path {
+    min-height: 44px;
+  }
+
+  .explore-card__queue,
+  .explore-card__save {
+    min-height: 44px;
+  }
+}
+
 .explore-attribution {
   line-height: var(--leading-body);
   letter-spacing: 0.04em;
