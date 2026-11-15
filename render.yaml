@@ -1,0 +1,28 @@
+# Render Blueprint for the FastAPI backend (Render → New → Blueprint).
+# Values marked sync: false are entered in the Render dashboard, never here.
+services:
+  - type: web
+    name: astra-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13"
+      - key: SPOTIFY_CLIENT_ID
+        sync: false
+      - key: SPOTIFY_CLIENT_SECRET
+        sync: false
+      # https://<your-netlify-site>/api/auth/callback
+      - key: SPOTIFY_REDIRECT_URI
+        sync: false
+      # https://<your-netlify-site>
+      - key: FRONTEND_URL
+        sync: false
+      - key: SPOTIFY_MARKET
+        value: GB
+      - key: COOKIE_SECURE
+        value: "true"

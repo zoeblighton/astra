@@ -23,6 +23,24 @@ Interactive API docs: http://127.0.0.1:8000/docs
 
 Restart the server after editing `.env` (settings are read at start-up).
 
+## Deploying
+
+The frontend is hosted on Netlify and this backend on Render (free tier),
+configured by `netlify.toml` and `render.yaml` at the repo root. Netlify
+proxies `/api/*` to Render, so the browser sees a single origin.
+
+Render environment variables (Render → astra-api → Environment):
+
+| Key | Value |
+|---|---|
+| `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` | from the Spotify dashboard |
+| `SPOTIFY_REDIRECT_URI` | `https://<netlify-site>/api/auth/callback` (also add it in the Spotify dashboard) |
+| `FRONTEND_URL` | `https://<netlify-site>` |
+
+Free Render services sleep after 15 minutes idle and take about a minute to
+wake; meanwhile the frontend shows its sample data. Sessions are in memory,
+so a restart or sleep logs people out.
+
 ## Endpoints
 
 | Method | Path | Login? | Purpose |
