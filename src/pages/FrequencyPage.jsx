@@ -3,6 +3,7 @@ import Artwork from '../components/ui/Artwork.jsx';
 import Button from '../components/ui/Button.jsx';
 import PageIntro from '../components/layout/PageIntro.jsx';
 import { searchCatalogue } from '../services/catalogue.js';
+import { usePlayer } from '../components/player/PlayerContext.jsx';
 import './FrequencyPage.css';
 
 const STORAGE_KEY = 'astra-frequency-result-v1';
@@ -208,6 +209,7 @@ function OrbitMoods({ selectedMoods, onToggle }) {
 }
 
 function FrequencyRecommendations({ identity, secondaryIdentity }) {
+  const { playTrack } = usePlayer();
   const [recommendations, setRecommendations] = useState([]);
   const [source, setSource] = useState('sample');
   const [status, setStatus] = useState('loading');
@@ -290,6 +292,19 @@ function FrequencyRecommendations({ identity, secondaryIdentity }) {
                   </a>
                 ) : (
                   <span className="frequency-rec-card__sample">ASTRA sample</span>
+                )}
+                {item.type === 'track' && (
+                  <button
+                    className="frequency-rec-card__queue"
+                    type="button"
+                    onClick={() => playTrack(
+                      item,
+                      recommendations.filter((candidate) =>
+                        candidate.type === 'track' && candidate.source === item.source),
+                    )}
+                  >
+                    {item.spotifyUrl ? 'Add to player' : 'View sample in player'}
+                  </button>
                 )}
               </div>
             </article>

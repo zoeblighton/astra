@@ -29,6 +29,22 @@ const PATHS = {
   universe: <path d="M19.5 14.6A8 8 0 1 1 9.4 4.5a6.4 6.4 0 0 0 10.1 10.1z" />,
   close: <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />,
   play: <path d="M8 5.8v12.4a.6.6 0 0 0 .9.5l10-6.2a.6.6 0 0 0 0-1L8.9 5.3a.6.6 0 0 0-.9.5z" fill="currentColor" stroke="none" />,
+  pause: <path d="M8 6.5v11M16 6.5v11" />,
+  skipBack: <path d="M6 5v14M19 6.2v11.6a.6.6 0 0 1-.9.5l-9.5-5.8a.6.6 0 0 1 0-1l9.5-5.8a.6.6 0 0 1 .9.5z" />,
+  skipForward: <path d="M18 5v14M5 6.2v11.6a.6.6 0 0 0 .9.5l9.5-5.8a.6.6 0 0 0 0-1L5.9 5.7a.6.6 0 0 0-.9.5z" />,
+  visualiser: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <circle cx="12" cy="12" r="5.5" />
+      <circle cx="12" cy="12" r="2" />
+    </>
+  ),
+  headphones: (
+    <>
+      <path d="M4.5 13v-1a7.5 7.5 0 0 1 15 0v1" />
+      <path d="M4.5 13h3v6h-1a2 2 0 0 1-2-2zM19.5 13h-3v6h1a2 2 0 0 0 2-2z" />
+    </>
+  ),
   plus: <path d="M12 5v14M5 12h14" />,
   check: <path d="M5 12.5l4.5 4.5L19 7.5" />,
   arrowRight: <path d="M5 12h14M13 6l6 6-6 6" />,

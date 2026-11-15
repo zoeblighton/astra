@@ -4,6 +4,7 @@ import Button from '../components/ui/Button.jsx';
 import PageIntro from '../components/layout/PageIntro.jsx';
 import { routeHref } from '../paths.js';
 import { searchCatalogue } from '../services/catalogue.js';
+import { usePlayer } from '../components/player/PlayerContext.jsx';
 import './DiscoverPage.css';
 
 const LISTENING_PATHS = [
@@ -15,6 +16,7 @@ const LISTENING_PATHS = [
 ];
 
 export default function DiscoverPage() {
+  const { playTrack } = usePlayer();
   const [activePath, setActivePath] = useState(LISTENING_PATHS[0]);
   const [tracks, setTracks] = useState([]);
   const [source, setSource] = useState('sample');
@@ -120,6 +122,14 @@ export default function DiscoverPage() {
                   ) : (
                     <span className="discover-track__sample">Sample track</span>
                   )}
+                  <Button
+                    className="discover-track__queue"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => playTrack(track, tracks)}
+                  >
+                    {track.spotifyUrl ? 'Add to player' : 'View sample in player'}
+                  </Button>
                 </div>
               </article>
             ))}

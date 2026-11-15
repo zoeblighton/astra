@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { getCatalogueSource } from '../../services/catalogue.js';
 import CosmicBackground from './CosmicBackground.jsx';
 import Header from './Header.jsx';
+import NowPlayingPlayer from '../player/NowPlayingPlayer.jsx';
+import { usePlayer } from '../player/PlayerContext.jsx';
 import { routeHref } from '../../paths.js';
 import './AppShell.css';
 
@@ -14,6 +16,7 @@ import './AppShell.css';
 export default function AppShell({ currentRoute, pageTitle, children }) {
   const isFirstRender = useRef(true);
   const [source, setSource] = useState('sample');
+  const { currentTrack } = usePlayer();
 
   useEffect(() => {
     getCatalogueSource().then(setSource);
@@ -38,7 +41,7 @@ export default function AppShell({ currentRoute, pageTitle, children }) {
       <CosmicBackground />
       <Header currentRoute={currentRoute} />
 
-      <main id="main" className="app-main container">
+      <main id="main" className={`app-main container${currentTrack ? ' app-main--with-player' : ''}`}>
         {children}
       </main>
 
@@ -51,6 +54,8 @@ export default function AppShell({ currentRoute, pageTitle, children }) {
         </p>
         <a href={routeHref('kit')}>UI kit</a>
       </footer>
+
+      <NowPlayingPlayer />
     </>
   );
 }

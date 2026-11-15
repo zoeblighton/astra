@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import Artwork from '../components/ui/Artwork.jsx';
+import Button from '../components/ui/Button.jsx';
 import PageIntro from '../components/layout/PageIntro.jsx';
 import { searchCatalogue } from '../services/catalogue.js';
+import { usePlayer } from '../components/player/PlayerContext.jsx';
 import './ExplorePage.css';
 
 const CATEGORIES = [
@@ -52,6 +54,7 @@ const CATEGORIES = [
 ];
 
 export default function ExplorePage() {
+  const { playTrack } = usePlayer();
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [activePath, setActivePath] = useState(CATEGORIES[0].paths[0]);
   const [items, setItems] = useState([]);
@@ -211,6 +214,16 @@ export default function ExplorePage() {
                     </a>
                   ) : (
                     <span className="explore-card__sample">ASTRA sample</span>
+                  )}
+                  {item.type === 'track' && (
+                    <Button
+                      className="explore-card__queue"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => playTrack(item, items.filter((candidate) => candidate.type === 'track'))}
+                    >
+                      {item.spotifyUrl ? 'Add to player' : 'View sample in player'}
+                    </Button>
                   )}
                 </div>
               </article>

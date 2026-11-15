@@ -3,6 +3,10 @@
   padding-bottom: var(--space-8);
 }
 
+.app-main--with-player {
+  padding-bottom: 22rem;
+}
+
 .app-footer {
   display: flex;
   flex-wrap: wrap;
@@ -31,5 +35,17 @@
 @media (max-width: 1199px) {
   .app-footer {
     padding-bottom: calc(var(--space-9) + env(safe-area-inset-bottom));
+  }
+}
+
+@media (min-width: 768px) {
+  .app-main--with-player {
+    padding-bottom: 23rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .app-main--with-player {
+    padding-bottom: 19rem;
   }
 }

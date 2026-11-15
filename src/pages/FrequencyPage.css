@@ -526,6 +526,22 @@
   margin-top: var(--space-2);
 }
 
+.frequency-rec-card__queue {
+  justify-self: start;
+  min-height: 32px;
+  margin-top: var(--space-1);
+  padding: 0 var(--space-2);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-meta);
+}
+
+.frequency-rec-card__queue:hover {
+  color: var(--color-text);
+  border-color: var(--color-secondary);
+}
+
 .frequency-rec-card__details > a:hover {
   color: var(--color-accent-soft);
 }

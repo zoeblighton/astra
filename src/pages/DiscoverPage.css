@@ -158,6 +158,18 @@
   margin-top: var(--space-2);
 }
 
+.discover-track__queue {
+  justify-self: start;
+  min-height: 32px;
+  margin-top: var(--space-1);
+  padding-inline: var(--space-2);
+  color: var(--color-text-secondary);
+}
+
+.discover-track__queue:hover {
+  color: var(--color-text);
+}
+
 .discover-message {
   padding: var(--space-5);
   color: var(--color-text-secondary);

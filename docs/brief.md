@@ -168,10 +168,11 @@ Include:
 - Album artwork
 - Track title
 - Artist name
-- Play and pause
-- Previous and next
-- Progress bar
-- Playback controls
+- Spotify-hosted playback controls for Spotify tracks; ASTRA does not stream or host audio
+- Queue navigation (previous and next)
+- Playback progress supplied by the Spotify embed
+- Optional audio-reactive visualiser with glass-like orbital forms and glowing artwork. Sync requires the user to share the Spotify browser tab with audio; analysis stays in the browser and is not recorded or uploaded.
+- Label sample tracks as fictional and unplayable; never simulate playback for them
 
 ### My Universe
 A personal music library containing:
