@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import Navigation from './Navigation.jsx';
 import SearchBar from '../ui/SearchBar.jsx';
+import SpotifyAccount from './SpotifyAccount.jsx';
 import { IconButton } from '../ui/Button.jsx';
 import { usePlayer } from '../player/PlayerContext.jsx';
 import { DEFAULT_ROUTE, routeHref } from '../../paths.js';
 import './Header.css';
 
 /*
- * Sticky app header: wordmark, navigation (desktop) and search.
+ * Sticky app header: wordmark, navigation (desktop), search and the
+ * optional Spotify login.
  * On mobile, search lives behind a toggle to keep the header compact.
  */
 export default function Header({ currentRoute }) {
@@ -57,6 +59,8 @@ export default function Header({ currentRoute }) {
           aria-expanded={searchOpen}
           onClick={() => setSearchOpen((open) => !open)}
         />
+
+        <SpotifyAccount />
       </div>
     </header>
   );

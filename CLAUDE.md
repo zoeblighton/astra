@@ -51,6 +51,7 @@ src/
   pages/             one file per route; KitPage = living UI kit at #/kit
   data/sampleData.js FICTIONAL sample data — only read via services/
   services/          catalogue.js: calls /api, falls back to sample data
+                     account.js: optional Spotify login (Connect Spotify in the header)
   hooks/             useHashRoute (hash routing, no router dependency)
   utils/             formatting helpers
 ```
