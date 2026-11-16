@@ -39,12 +39,46 @@ export async function getAccount({ signal } = {}) {
   return { status: 'disconnected' };
 }
 
+/**
+ * The user's Spotify library: liked songs, followed artists and playlists.
+ * Each section is { items, total, available }; available: false means
+ * Spotify refused that part (Development Mode restrictions).
+ * A sleeping API can take ~50s to wake, hence the longer timeout.
+ *
+ * @returns {Promise<
+ *   | { status: 'connected', library: { likedTracks: object, followedArtists: object, playlists: object } }
+ *   | { status: 'disconnected' }
+ *   | { status: 'not-allowed' }
+ *   | { status: 'unavailable' }
+ * >}
+ */
+export async function getSpotifyLibrary({ signal } = {}) {
+  const timeout = AbortSignal.timeout(60000);
+  try {
+    const response = await fetch('/api/me/library', {
+      headers: { Accept: 'application/json' },
+      credentials: 'same-origin',
+      signal: signal ? AbortSignal.any([signal, timeout]) : timeout,
+    });
+    if (response.ok) return { status: 'connected', library: await response.json() };
+    if (response.status === 401) return { status: 'disconnected' };
+    if (response.status === 403) return { status: 'not-allowed' };
+  } catch (error) {
+    if (error?.name === 'AbortError' && signal?.aborted) throw error;
+  }
+  return { status: 'unavailable' };
+}
+
+/** Fired on window after logging out, so open pages can update. */
+export const ACCOUNT_CHANGED_EVENT = 'astra:account-changed';
+
 export async function logout() {
   try {
     await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
   } catch {
     // The session is dropped server-side anyway once it expires.
   }
+  window.dispatchEvent(new Event(ACCOUNT_CHANGED_EVENT));
 }
 
 /**

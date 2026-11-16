@@ -1,0 +1,140 @@
+/* Builds on the My Universe list styles in pages/UniversePage.css */
+
+.spotify-library__group {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.spotify-library__group + .spotify-library__group {
+  margin-top: var(--space-4);
+}
+
+.spotify-library__group-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+}
+
+.spotify-library__group-heading h3 {
+  font-size: var(--text-h3);
+}
+
+.spotify-library__group-heading span {
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+}
+
+.spotify-library__group-heading a {
+  color: var(--color-secondary);
+  text-underline-offset: 3px;
+}
+
+.spotify-library__group-heading a:hover {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+.spotify-library__note {
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+}
+
+/* Spotify artwork stays square (never cropped); artists may be round */
+.spotify-library__cover {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.spotify-library__cover--round {
+  border-radius: 50%;
+}
+
+/* .spotify-library prefix: outranks the round artwork rules in UniversePage.css */
+.spotify-library .universe-item > .spotify-library__cover {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-sm);
+}
+
+.spotify-library .universe-artist > .spotify-library__cover {
+  width: min(100%, 110px);
+  border-radius: 50%;
+}
+
+.spotify-library .universe-section__heading > span {
+  white-space: nowrap;
+}
+
+/* Playlists: artwork cards */
+.spotify-library__playlists {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.spotify-library__playlist {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-3);
+  color: var(--color-text);
+  text-decoration: none;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.spotify-library__playlist:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+.spotify-library__playlist .spotify-library__cover {
+  margin-bottom: var(--space-2);
+}
+
+.spotify-library__playlist-title {
+  overflow: hidden;
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spotify-library__playlist-meta {
+  overflow: hidden;
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .spotify-library__playlists {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .spotify-library__playlists {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .spotify-library .universe-item > .spotify-library__cover {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotify-library__playlist:hover {
+    transform: none;
+  }
+}

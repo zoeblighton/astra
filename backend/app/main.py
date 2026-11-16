@@ -4,6 +4,7 @@ ASTRA API (FastAPI).
 Run from backend/:  .venv\\Scripts\\python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 Interactive docs:   http://127.0.0.1:8000/docs
 """
+import asyncio
 import secrets
 import time
 from contextlib import asynccontextmanager
@@ -149,3 +150,52 @@ async def me(request: Request):
     token = await user_token(request)
     profile = await spotify(request).get("/me", token)
     return {"loggedIn": True, "user": mappers.user_profile(profile)}
+
+
+LIBRARY_LIMIT = 20
+
+
+@app.get("/api/me/library")
+async def my_library(request: Request):
+    """The logged-in user's liked songs, followed artists and playlists.
+
+    Each section loads independently: if Spotify refuses one (Development Mode
+    restrictions change), it comes back with available: false and the others
+    still load. An expired session still raises 401 for the whole request.
+    """
+    token = await user_token(request)
+    client = spotify(request)
+
+    async def section(path: str, params: dict, extract) -> dict:
+        try:
+            items, total = extract(await client.get(path, token, params))
+        except SpotifyError as exc:
+            if exc.status == 401:
+                raise
+            return {"items": [], "total": 0, "available": False}
+        return {"items": items, "total": total, "available": True}
+
+    def liked(data: dict):
+        tracks = [mappers.search_track(i["track"]) for i in data.get("items", []) if i and i.get("track")]
+        return tracks, data.get("total", len(tracks))
+
+    def followed(data: dict):
+        page = data.get("artists") or {}
+        artists = [mappers.search_artist(a) for a in page.get("items", []) if a]
+        return artists, page.get("total", len(artists))
+
+    def playlists(data: dict):
+        lists = [mappers.playlist(p) for p in data.get("items", []) if p and p.get("id")]
+        return lists, data.get("total", len(lists))
+
+    liked_tracks, followed_artists, user_playlists = await asyncio.gather(
+        section("/me/tracks", {"limit": LIBRARY_LIMIT, "market": settings.market}, liked),
+        section("/me/following", {"type": "artist", "limit": LIBRARY_LIMIT}, followed),
+        section("/me/playlists", {"limit": LIBRARY_LIMIT}, playlists),
+    )
+    return {
+        "source": "spotify",
+        "likedTracks": liked_tracks,
+        "followedArtists": followed_artists,
+        "playlists": user_playlists,
+    }

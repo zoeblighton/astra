@@ -3,6 +3,7 @@ import Artwork from '../components/ui/Artwork.jsx';
 import Button from '../components/ui/Button.jsx';
 import PageIntro from '../components/layout/PageIntro.jsx';
 import { useUniverse } from '../components/universe/UniverseContext.jsx';
+import SpotifyLibrary from '../components/universe/SpotifyLibrary.jsx';
 import { IDENTITIES } from '../data/identities.js';
 import { routeHref } from '../paths.js';
 import './UniversePage.css';
@@ -87,7 +88,7 @@ export default function UniversePage() {
       />
 
       <p className="universe-storage-note">
-        Your library is saved in this browser only. It is not connected to a Spotify account.
+        What you save in ASTRA stays in this browser and isn’t added to your Spotify account.
       </p>
       {storageMessage && <p className="universe-message" role="status">{storageMessage}</p>}
       {frequencyState.error && <p className="universe-message" role="status">{frequencyState.error}</p>}
@@ -120,6 +121,8 @@ export default function UniversePage() {
           </Button>
         </div>
       </section>
+
+      <SpotifyLibrary />
 
       <section className="universe-section" aria-labelledby="universe-tracks-title">
         <div className="universe-section__heading">

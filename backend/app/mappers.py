@@ -73,6 +73,21 @@ def artist_detail(artist: dict, albums: list[dict]) -> dict:
     }
 
 
+def playlist(item: dict) -> dict:
+    # Spotify renamed a playlist's "tracks" summary to "items" in 2026; accept either.
+    summary = item.get("items") or item.get("tracks") or {}
+    owner = item.get("owner") or {}
+    return {
+        "id": item["id"],
+        "type": "playlist",
+        "title": item.get("name", ""),
+        "trackCount": summary.get("total"),
+        "ownerName": owner.get("display_name") or owner.get("id") or "",
+        "imageUrl": _image(item.get("images"), 300),
+        "spotifyUrl": _spotify_url(item),
+    }
+
+
 def user_profile(me: dict) -> dict:
     return {
         "id": me.get("id"),

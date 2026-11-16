@@ -52,6 +52,7 @@ so a restart or sleep logs people out.
 | GET | `/api/auth/callback` | – | Spotify redirects here (must match the dashboard Redirect URI) |
 | POST | `/api/auth/logout` | – | Ends the session |
 | GET | `/api/me` | ✓ | Logged-in user's profile |
+| GET | `/api/me/library` | ✓ | Liked songs, followed artists and playlists (20 each) |
 
 ## Spotify Development Mode limits (as of 2026)
 
