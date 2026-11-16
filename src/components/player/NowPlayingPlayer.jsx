@@ -529,7 +529,6 @@ export default function NowPlayingPlayer() {
 
         <div className="now-playing__visualiser-core" aria-hidden="true">
           <div className="now-playing__spectrum" aria-hidden="true">{bars}</div>
-          <div className="now-playing__lens" aria-hidden="true" />
         </div>
 
         <div className="now-playing__queue-count" aria-label={`Track ${currentIndex + 1} of ${queue.length}`}>
